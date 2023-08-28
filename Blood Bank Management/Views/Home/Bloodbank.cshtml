@@ -1,0 +1,106 @@
+@model List<BloodDonor>
+
+@{
+    ViewData["Title"] = "Blood Donors List";
+}
+
+<h3>Blood Donors Management</h3>
+
+<a asp-area="" asp-controller="Home" asp-action="AddBloodDonorsView">Add Blood Donors</a>
+
+<table>
+    <thead>
+        <tr>
+            <th>Company Name</th>
+            <th>Capacity</th>
+            <th>Quantity In Stock</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td><span class="editable-field" data-field="PatientName">@item.PatientName</span></td>
+                <td><span class="editable-field" data-field="Capacity">@item.Capacity</span></td>
+                <td><span class="editable-field" data-field="QuantityInStock">@item.QuantityInStock</span></td>
+                <td>
+                    <a class="edit-button" href="#">Edit</a>
+                    <button class="delete-button" data-patient-name="@item.PatientName">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<style>
+    /* Add some spacing between the table cells */
+    table {
+        margin-top: 20px;
+        border-collapse: collapse; /* Combine cell borders for better spacing */
+        width: 100%; /* Make the table span the available width */
+    }
+
+    th, td {
+        padding: 8px; /* Adjust the padding as needed */
+        border: 1px solid #dddddd; /* Add borders to cells */
+        text-align: left; /* Align text within cells */
+    }
+
+    .editable-field {
+        cursor: pointer;
+    }
+
+        .editable-field.editing {
+            border: 1px solid #000;
+        }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Handle delete button click
+        $('.delete-button').click(function () {
+            var patientName = $(this).data('patient-name');
+            if (confirm('Are you sure you want to delete this donor?')) {
+                $(this).closest('tr').remove(); // Remove the row from the table
+                console.log('Donor deleted:', patientName);
+            }
+        });
+
+        // Handle edit button click
+        $('.edit-button').click(function () {
+            var $row = $(this).closest('tr');
+            $row.find('.editable-field').addClass('editing').attr('contenteditable', true);
+            $(this).text('Save');
+            $(this).removeClass('edit-button').addClass('save-button');
+        });
+
+        // Handle save button click
+        $(document).on('click', '.save-button', function () {
+            var $row = $(this).closest('tr');
+            var patientName = $row.find('[data-field="PatientName"]').text();
+            var capacity = $row.find('[data-field="Capacity"]').text();
+            var quantityInStock = $row.find('[data-field="QuantityInStock"]').text();
+
+            // Perform AJAX request to save the edited data
+            $.ajax({
+                url: '/Home/SaveEditedBloodDonor', // Specify the correct URL
+                method: 'POST', // Use the appropriate HTTP method
+                data: {
+                    patientName: patientName,
+                    capacity: capacity,
+                    quantityInStock: quantityInStock
+                },
+                success: function (response) {
+                    console.log('Donor data saved:', response);
+                    $row.find('.editable-field').removeClass('editing').attr('contenteditable', false);
+                    $('.save-button').text('Edit').removeClass('save-button').addClass('edit-button');
+                },
+                error: function (error) {
+                    console.error('Error saving donor data:', error);
+                }
+            });
+        });
+    });
+</script>

@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "Add Blood Donors";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewData["Title"]</title>
+</head>
+<body>
+
+    <h3>Add Blood Donors</h3>
+
+    <div>
+        <form asp-action="AddBloodDonor" asp-controller="Home" method="post">
+            <div>
+                <label>Patient Name:</label>
+                <input required type="text" name="PatientName" pattern="^\S.*$" title="Spaces at the beginning are not allowed." />
+
+                <label style="font-weight: bold; margin-bottom: 5px;">Capacity:</label>
+                <input required type="number" name="Capacity" min="0" />
+
+                <label style="font-weight: bold; margin-bottom: 5px;">Quantity In Stock:</label>
+                <input required type="number" name="QuantityInStock" min="0" />
+
+                <div style="display:flex; justify-content:space-around;width:100%">
+                    <button type="submit">Add Blood Donors</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function deleteBloodDonor(id) {
+            if (confirm("Are you sure you want to delete this donor?")) {
+                // You can perform the delete action here, for example, by redirecting to a delete action in your controller
+                window.location.href = '/Home/DeleteBloodDonor?id=' + id;
+            }
+        }
+
+        function editBloodDonor(id) {
+            // You can perform the edit action here, for example, by redirecting to an edit action in your controller
+            window.location.href = '/Home/EditBloodDonor?id=' + id;
+        }
+    </script>
+
+</body>
+</html>
